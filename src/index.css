@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+body {
+	font-family:
+		system-ui,
+		-apple-system,
+		BlinkMacSystemFont,
+		sans-serif !important;
+	background-color: white !important;
+}
+
+@media (prefers-color-scheme: dark) {
+	body {
+		background-color: black !important;
+	}
+}
+
+html {
+	@apply bg-white dark:bg-black;
+}
