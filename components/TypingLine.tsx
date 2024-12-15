@@ -104,7 +104,7 @@ export default function Line({
 	return (
 		<div
 			className={
-				"w-full p-4 duration-500 rounded-lg text-3xl " + (isTyping ? "h-32 bg-zinc-800" : "h-16 bg-zinc-900")
+				"w-full p-4 duration-500 rounded-lg text-3xl origin-top " + (isTyping ? "h-32 bg-zinc-800" : "h-16 bg-zinc-900")
 			}
 		>
 			<div>
