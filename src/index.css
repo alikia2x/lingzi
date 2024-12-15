@@ -19,3 +19,7 @@ body {
 html {
 	@apply bg-white dark:bg-black;
 }
+
+.wireframe {
+	@apply border-2 border-black border-dotted;
+}

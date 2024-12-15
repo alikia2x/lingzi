@@ -1,4 +1,3 @@
-import * as en_US from "i18n/en_US.json";
 import * as zh_Hans from "i18n/zh_Hans.json";
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
@@ -10,14 +9,11 @@ i18n.use(initReactI18next)
 	.use(ICU)
 	.init({
 		resources: {
-			"en-US": {
-				translation: en_US
-			},
 			"zh-CN": {
 				translation: zh_Hans
 			}
 		},
-		fallbackLng: "en-US",
+		fallbackLng: "zh-CN",
 
 		interpolation: {
 			// react already safes from xss => https://www.i18next.com/translation-function/interpolation#unescape
@@ -29,13 +25,3 @@ i18n.use(initReactI18next)
 			caches: []
 		}
 	});
-
-const setLanguage = (targetLng: "en_US" | "zh_Hans" | "zh_Hant" | "ja" | "es" | "fr") => {
-	localStorage.setItem("i18nextLng", targetLng);
-};
-
-const clearLanguage = () => {
-	localStorage.removeItem("i18nextLng");
-};
-
-export default { setLanguage, clearLanguage };
