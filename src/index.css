@@ -23,3 +23,13 @@ html {
 .wireframe {
 	@apply border-2 border-black border-dotted;
 }
+
+.remove-arrow::-webkit-inner-spin-button,
+.remove-arrow::-webkit-outer-spin-button {
+	-webkit-appearance: none;
+	margin: 0;
+}
+
+.remove-arrow {
+	-moz-appearance: textfield;
+}
