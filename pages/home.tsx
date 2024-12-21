@@ -141,10 +141,11 @@ export default function Home() {
 	useEffect(() => {
 		if (import.meta.env.MODE !== "development") {
 			document.addEventListener("paste", (e) => {
-				e.preventDefault();
+				if (rawText)
+					e.preventDefault();
 			});
 		}
-	}, []);
+	}, [rawText]);
 
 	useEffect(() => {
 		if (!linesContainer.current) return;
@@ -211,7 +212,7 @@ export default function Home() {
 					const tokenChars = token.split("");
 					let correct = true;
 					let completed = true;
-					for (const char of tokenChars) {
+					for (const _char of tokenChars) {
 						if (flattnedData[i]?.status !== "correct") {
 							correct = false;
 						}
