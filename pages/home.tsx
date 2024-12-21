@@ -3,6 +3,7 @@ import { type TypingChar, type TypingData } from "lib/type";
 import formatDuration from "lib/utils/formatDuration";
 import tokenize from "lib/utils/tokenizer";
 import { useEffect, useState, useRef, useCallback } from "react";
+import { Tabs, Tab } from "@nextui-org/tabs";
 
 function TitleBar() {
 	return (
@@ -68,11 +69,11 @@ function LiveStats({
 			<div className="w-12">
 				<span className="text-xl font-bold">{formatDuration(elapsed / 1000)}</span>
 			</div>
-			<div className="w-20 font-bold">
+			<div className="w-[5.5rem] font-bold">
 				<span className="text-xl">{wpm}</span>
 				<span className="text-sm ml-1">字/分</span>
 			</div>
-			<div className="w-21 font-bold">
+			<div className="w-26 font-bold">
 				<span className="text-xl">{Math.round(acc)}%</span>
 				<span className="text-sm ml-1">正确率</span>
 			</div>
@@ -147,7 +148,7 @@ export default function Home() {
 
 	useEffect(() => {
 		if (!linesContainer.current) return;
-		const maxWidth = linesContainer.current.clientWidth - 16;
+		const maxWidth = linesContainer.current.clientWidth - 32;
 		tokens.current = tokenize(rawText);
 		const lines = splitLines(maxWidth, tokens.current);
 		setTypingTextLines(lines);
@@ -270,10 +271,25 @@ export default function Home() {
 						value={inputText}
 						onChange={(e) => setInputText(e.target.value)}
 					></textarea>
-					
+					<div>
+						<Tabs
+							aria-label="Options"
+							defaultSelectedKey="60"
+							onSelectionChange={(key) => setMaxTime(parseInt(key as string))}
+						>
+							<Tab key="15" title="15秒" />
+							<Tab key="30" title="30秒" />
+							<Tab key="60" title="1分钟" />
+							<Tab key="120" title="2分钟" />
+							<Tab key="180" title="3分钟" />
+							<Tab key="240" title="4分钟" />
+							<Tab key="300" title="5分钟" />
+							<Tab key="600" title="10分钟" />
+						</Tabs>
+					</div>
 					<button
 						className="w-24 h-10 bg-blue-500 text-white rounded-md"
-						onClick={() => setRawText(inputText)}
+						onClick={() => setRawText(inputText.replace(/\n/g, " ").trim())}
 					>
 						开始练习
 					</button>
@@ -284,8 +300,28 @@ export default function Home() {
 	return (
 		<Template>
 			<LiveStats elapsed={elapsedRef.current} wpm={wpm} acc={accuracy} haveNotStarted={typingStartedAt == null} />
-			<div className="flex flex-col items-center justify-center py-6" ref={linesContainer}>
+			<div
+				className="relative items-center h-[calc(100vh-15rem)] min-h-16 max-h-[50vh] overflow-hidden mask"
+				ref={linesContainer}
+			>
+				<div className="absolute rounded-lg top-0 left-0 w-full h-32 bg-slate-100 dark:bg-zinc-800">
+
+				</div>
 				{text.map((item, index) => {
+					const baseHeight = 64;
+					const currentLineHeight = 128;
+					let top = 0;
+					if (index < currentTypingLine) {
+						const offset = index - currentTypingLine;
+						top = offset * baseHeight;
+					}
+					else if (index == currentTypingLine) {
+					    top = 0;
+					}
+					else {
+						const offset = index - currentTypingLine - 1;
+						top = offset * baseHeight + currentLineHeight;
+					}
 					return (
 						<Line
 							key={index}
@@ -297,6 +333,7 @@ export default function Home() {
 							typingChars={typingData[index.toString()] || []}
 							typingEvent={receiveTypingEvent}
 							ref={(el) => (childRefs.current[index] = el!)}
+							top={top}
 						/>
 					);
 				})}

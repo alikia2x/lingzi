@@ -1,6 +1,6 @@
 import { type TypingChar, type TypingLine } from "lib/type";
 import segementPinyin from "lib/utils/segmentPinyin";
-import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 
 function splitComposedPinyin(str: string) {
 	if (str.includes(" ")) {
@@ -20,12 +20,13 @@ interface LineProps {
 	setTypingData: (data: TypingLine, index: number) => void;
 	typingChars: TypingLine;
 	typingEvent: () => void;
+	top: number;
 }
 
 const Line = forwardRef(
 	(
-		{ text, isTyping, index, setTypingNextLine, setTypingData, typingChars, typingEvent }: LineProps,
-		ref: React.Ref<{ receiveOverflow: (text: string) => void }>
+		{ text, isTyping, index, setTypingNextLine, setTypingData, typingChars, typingEvent, top }: LineProps,
+		ref: React.Ref<{ receiveOverflow: (text: string) => void; getContainer: () => HTMLDivElement | null }>
 	) => {
 		const [typedString, setTypeString] = useState("");
 		const [composingString, setComposingString] = useState("");
@@ -33,6 +34,7 @@ const Line = forwardRef(
 		const [inputWithoutComposing, setInputWithoutComposing] = useState("");
 		const [fullLength, setFullLength] = useState(0);
 		const [composing, setComposing] = useState(false);
+		const containerRef = useRef<HTMLDivElement>(null);
 
 		function handleInput(e: React.FormEvent<HTMLInputElement>) {
 			setTypeString(e.currentTarget.value);
@@ -53,6 +55,10 @@ const Line = forwardRef(
 			setComposingString("");
 			setInputWithoutComposing(typedString);
 			typingEvent();
+		}
+
+		function getContainer() {
+			return containerRef.current;
 		}
 
 		useEffect(() => {
@@ -105,15 +111,18 @@ const Line = forwardRef(
 		}
 
 		useImperativeHandle(ref, () => ({
-			receiveOverflow
+			receiveOverflow,
+			getContainer
 		}));
 
 		return (
 			<div
 				className={
-					"w-full p-4 duration-500 rounded-lg text-3xl origin-top " +
-					(isTyping ? "h-32 bg-zinc-200 dark:bg-zinc-800" : "h-16 bg-white dark:bg-zinc-900")
+					"absolute w-full p-4 duration-500 transition-transform rounded-lg text-3xl origin-top " +
+					(isTyping ? "h-32" : "h-16")
 				}
+				style={{ transform: `translateY(${top}px)` }}
+				ref={containerRef}
 			>
 				<ColoredChars typingChars={typingChars} />
 				{isTyping && (
@@ -124,7 +133,7 @@ const Line = forwardRef(
 						onCompositionStart={handleCompositionStart}
 						onCompositionUpdate={() => typingEvent}
 						value={typedString}
-						className="outline-none w-full h-16 bg-zinc-200 dark:bg-zinc-800"
+						className="outline-none w-full h-16 bg-transparent"
 						autoFocus={true}
 					/>
 				)}
